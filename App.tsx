@@ -1,118 +1,103 @@
-/**
- * Sample React Native App
- * https://github.com/facebook/react-native
- *
- * @format
- */
-
-import React from 'react';
-import type {PropsWithChildren} from 'react';
+import React, { useEffect, useRef, useState } from 'react';
+import { Button, StyleSheet, Text, View } from 'react-native';
 import {
-  SafeAreaView,
-  ScrollView,
-  StatusBar,
-  StyleSheet,
-  Text,
-  useColorScheme,
-  View,
-} from 'react-native';
+  Camera,
+  useCameraDevice,
+  CameraPosition,
+  useCameraPermission,
+  useMicrophonePermission,
+} from 'react-native-vision-camera';
 
-import {
-  Colors,
-  DebugInstructions,
-  Header,
-  LearnMoreLinks,
-  ReloadInstructions,
-} from 'react-native/Libraries/NewAppScreen';
+export default function CameraPeve() {
+  const [active, setActive] = useState(false);
+  const [hasPermission, setHasPermission] = useState(false);
+  const [cameraType, setCameraType] = useState<CameraPosition>('back');
+  const device = useCameraDevice(cameraType);
+  const camera = useRef<Camera>(null);
 
-type SectionProps = PropsWithChildren<{
-  title: string;
-}>;
+  const {
+    hasPermission: hasCameraPermission,
+    requestPermission: requestCameraPermission,
+  } = useCameraPermission();
 
-function Section({children, title}: SectionProps): React.JSX.Element {
-  const isDarkMode = useColorScheme() === 'dark';
+  const {
+    hasPermission: hasMicrophonePermission,
+    requestPermission: requestMicrophonePermission,
+  } = useMicrophonePermission();
+
+  useEffect(() => {
+    if (hasCameraPermission && hasMicrophonePermission) setHasPermission(true);
+  }, [hasCameraPermission, hasMicrophonePermission]);
+
+  useEffect(() => {
+    if (!hasPermission || !device) return;
+    const timeout = setTimeout(() => setActive(true), 1e3);
+    return () => clearTimeout(timeout);
+  }, [device, hasPermission]);
+
+  const toggleCamera = () =>
+    setCameraType((type) => (type === 'front' ? 'back' : 'front'));
+
+  const takePhoto = async () => {
+    try {
+      const photo = await camera.current?.takePhoto();
+      console.log('🐞 ~ photo:', photo);
+    } catch (error) {
+      console.log('🐞 ~ error:', error);
+    }
+  };
+
+  if (!device || !hasPermission) {
+    return (
+      <View style={styles.container}>
+        <Button
+          onPress={requestCameraPermission}
+          title="Camera permission"
+          disabled={hasCameraPermission}
+        />
+
+        <Button
+          onPress={requestMicrophonePermission}
+          title="Microphone permission"
+          disabled={hasMicrophonePermission}
+        />
+      </View>
+    );
+  }
+
   return (
-    <View style={styles.sectionContainer}>
-      <Text
-        style={[
-          styles.sectionTitle,
-          {
-            color: isDarkMode ? Colors.white : Colors.black,
-          },
-        ]}>
-        {title}
-      </Text>
-      <Text
-        style={[
-          styles.sectionDescription,
-          {
-            color: isDarkMode ? Colors.light : Colors.dark,
-          },
-        ]}>
-        {children}
-      </Text>
+    <View style={styles.container}>
+      <Button
+        onPress={() => setActive((p) => !p)}
+        title={active ? 'Disable Camera' : 'Active Camera'}
+      />
+      <Button onPress={toggleCamera} title={'Toggle Camera'} />
+      <Button onPress={takePhoto} title={'Take Photo'} />
+      {!active && <Text style={styles.warning}>Camera is not Active</Text>}
+      <Camera
+        ref={camera}
+        isActive={active}
+        device={device}
+        photo={true}
+        style={{ flex: 1 }}
+      />
     </View>
   );
 }
 
-function App(): React.JSX.Element {
-  const isDarkMode = useColorScheme() === 'dark';
-
-  const backgroundStyle = {
-    backgroundColor: isDarkMode ? Colors.darker : Colors.lighter,
-  };
-
-  return (
-    <SafeAreaView style={backgroundStyle}>
-      <StatusBar
-        barStyle={isDarkMode ? 'light-content' : 'dark-content'}
-        backgroundColor={backgroundStyle.backgroundColor}
-      />
-      <ScrollView
-        contentInsetAdjustmentBehavior="automatic"
-        style={backgroundStyle}>
-        <Header />
-        <View
-          style={{
-            backgroundColor: isDarkMode ? Colors.black : Colors.white,
-          }}>
-          <Section title="Step One">
-            Edit <Text style={styles.highlight}>App.tsx</Text> to change this
-            screen and then come back to see your edits.
-          </Section>
-          <Section title="See Your Changes">
-            <ReloadInstructions />
-          </Section>
-          <Section title="Debug">
-            <DebugInstructions />
-          </Section>
-          <Section title="Learn More">
-            Read the docs to discover what to do next:
-          </Section>
-          <LearnMoreLinks />
-        </View>
-      </ScrollView>
-    </SafeAreaView>
-  );
-}
-
 const styles = StyleSheet.create({
-  sectionContainer: {
-    marginTop: 32,
-    paddingHorizontal: 24,
+  warning: {
+    fontSize: 30,
+    fontWeight: 'bold',
+    textAlign: 'center',
+    color: 'red',
+    backgroundColor: 'yellow',
   },
-  sectionTitle: {
-    fontSize: 24,
-    fontWeight: '600',
+  container: {
+    flex: 1,
+    backgroundColor: 'white',
   },
-  sectionDescription: {
-    marginTop: 8,
-    fontSize: 18,
-    fontWeight: '400',
-  },
-  highlight: {
-    fontWeight: '700',
+  bold: {
+    fontWeight: 'bold',
   },
 });
-
-export default App;

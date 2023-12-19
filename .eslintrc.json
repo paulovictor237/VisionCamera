@@ -1,0 +1,5 @@
+{
+  "root": true,
+  "extends": ["@react-native"],
+  "plugins": ["react", "react-hooks", "@typescript-eslint", "testing-library"]
+}
