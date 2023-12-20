@@ -1,5 +1,6 @@
-import React, { useEffect, useRef, useState } from 'react';
-import { Button, StyleSheet, Text, View } from 'react-native';
+import { SwitchCamera } from 'lucide-react-native';
+import { useEffect, useRef, useState } from 'react';
+import { Button, TouchableOpacity, View } from 'react-native';
 import {
   Camera,
   useCameraDevice,
@@ -29,12 +30,6 @@ export const Home = () => {
     if (hasCameraPermission && hasMicrophonePermission) setHasPermission(true);
   }, [hasCameraPermission, hasMicrophonePermission]);
 
-  useEffect(() => {
-    if (!hasPermission || !device) return;
-    const timeout = setTimeout(() => setActive(true), 1e3);
-    return () => clearTimeout(timeout);
-  }, [device, hasPermission]);
-
   const toggleCamera = () =>
     setCameraType((type) => (type === 'front' ? 'back' : 'front'));
 
@@ -49,7 +44,7 @@ export const Home = () => {
 
   if (!device || !hasPermission) {
     return (
-      <View style={styles.container}>
+      <View className="flex-1">
         <Button
           onPress={requestCameraPermission}
           title="Camera permission"
@@ -66,41 +61,28 @@ export const Home = () => {
   }
 
   return (
-    <View style={styles.container}>
-      <Button
-        onPress={() => setActive((p) => !p)}
-        title={active ? 'Disable Camera' : 'Active Camera'}
-      />
-      <Button onPress={toggleCamera} title={'Toggle Camera'} />
-      <Button onPress={takePhoto} title={'Take Photo'} />
-      <Text className="font-bold text-red-500 text-2xl text-center bg-green-500">
-        Nativewind
-      </Text>
-      {!active && <Text style={styles.warning}>Camera is not Active</Text>}
+    <View className="flex-1">
       <Camera
         ref={camera}
         isActive={active}
         device={device}
         photo={true}
-        style={{ flex: 1 }}
+        className="flex-1"
+        onInitialized={() => setTimeout(() => setActive(true), 150)}
+      />
+      <View className="absolute top-10 right-4">
+        <TouchableOpacity
+          onPress={toggleCamera}
+          className="rounded-full bg-gray-500/50 p-2"
+        >
+          <SwitchCamera className="text-white" size={24} />
+        </TouchableOpacity>
+      </View>
+
+      <TouchableOpacity
+        onPress={takePhoto}
+        className="absolute h-20 w-20 rounded-full border-4 border-white bottom-12 self-center"
       />
     </View>
   );
 };
-
-const styles = StyleSheet.create({
-  warning: {
-    fontSize: 30,
-    fontWeight: 'bold',
-    textAlign: 'center',
-    color: 'red',
-    backgroundColor: 'yellow',
-  },
-  container: {
-    flex: 1,
-    backgroundColor: 'white',
-  },
-  bold: {
-    fontWeight: 'bold',
-  },
-});
