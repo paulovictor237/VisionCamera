@@ -12,7 +12,18 @@ export const App = () => {
     <NavigationContainer>
       <Stack.Navigator initialRouteName="Routes">
         <Stack.Screen name="Routes" component={RoutesScreen} />
-        <Stack.Screen name="Home" component={Home} />
+        <Stack.Screen
+          name="Home"
+          component={Home}
+          options={{
+            headerStyle: { backgroundColor: 'transparent' },
+            headerTransparent: true,
+            statusBarStyle: 'auto',
+            statusBarTranslucent: true,
+            statusBarColor: 'transparent',
+            title: '',
+          }}
+        />
       </Stack.Navigator>
     </NavigationContainer>
   );
