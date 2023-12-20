@@ -73,6 +73,9 @@ export default function CameraPeve() {
       />
       <Button onPress={toggleCamera} title={'Toggle Camera'} />
       <Button onPress={takePhoto} title={'Take Photo'} />
+      <Text className="font-bold text-red-500 text-2xl text-center bg-green-500">
+        Nativewind
+      </Text>
       {!active && <Text style={styles.warning}>Camera is not Active</Text>}
       <Camera
         ref={camera}
