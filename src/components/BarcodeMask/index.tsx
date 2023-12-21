@@ -6,10 +6,10 @@ import Reanimated, {
   withSpring,
   WithSpringConfig,
 } from 'react-native-reanimated';
-import { checkNumbre } from './BarcodeMask/assets/check-numbre';
-import { useLayout } from './BarcodeMask/hooks/layout';
+import { checkNumbre } from './assets/check-numbre';
+import { useLayout } from './hooks/layout';
 import { BarcodeMaskProps } from './types';
-import { AnimationFrame } from './BarcodeMask/components/animation-frame';
+import { AnimationFrame } from './components/animation-frame';
 
 const DEFAULT_WIDTH = 280;
 const DEFAULT_HEIGHT = 300;
