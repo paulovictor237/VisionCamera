@@ -1,7 +1,7 @@
 import { View, Button } from 'react-native';
 import React from 'react';
 import { NativeStackScreenProps } from '@react-navigation/native-stack';
-import { RouteNames, Routes } from './routes';
+import { RouteNames, Routes } from '../routes';
 
 type Props = NativeStackScreenProps<Routes, 'Routes'>;
 

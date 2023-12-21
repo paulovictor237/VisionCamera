@@ -5,9 +5,12 @@ import {
   Camera,
   useCameraDevice,
   CameraPosition,
+  useFrameProcessor,
+  useCodeScanner,
 } from 'react-native-vision-camera';
-import { useGetSize } from './hooks/sizes';
-import { usePermissions } from './hooks/permissions';
+import { useGetSize } from '../hooks/sizes';
+import { usePermissions } from '../hooks/permissions';
+import { BarcodeMask } from '../components';
 
 export const Home = () => {
   const [active, setActive] = useState(false);
@@ -23,6 +26,19 @@ export const Home = () => {
     requestMicrophonePermission,
   } = usePermissions();
 
+  const frameProcessor = useFrameProcessor((frame) => {
+    'worklet';
+    // console.log('🐞 ~ frame:', frame.isValid);
+  }, []);
+
+  const codeScanner = useCodeScanner({
+    codeTypes: ['code-93'],
+    onCodeScanned: (codes) => {
+      console.log('🐞 ~ codes:', codes);
+    },
+  });
+  console.log('🐞 ~ codeScanner:', codeScanner);
+
   const toggleCamera = () =>
     setCameraType((type) => (type === 'front' ? 'back' : 'front'));
 
@@ -37,7 +53,7 @@ export const Home = () => {
 
   if (!device || !hasPermission) {
     return (
-      <View className="flex-1">
+      <View className="flex-1" style={{ marginTop: headerStatusBar }}>
         <Button
           onPress={requestCameraPermission}
           title="Camera permission"
@@ -62,6 +78,26 @@ export const Home = () => {
         photo={true}
         style={StyleSheet.absoluteFill}
         onInitialized={() => setTimeout(() => setActive(true), 150)}
+        // frameProcessor={frameProcessor}
+        codeScanner={codeScanner}
+        fps={10}
+      />
+      <BarcodeMask
+        lineAnimationDuration={2000}
+        showAnimatedLine={true}
+        width={350}
+        height={160}
+        outerMaskOpacity={0.6}
+        backgroundColor="#000"
+        edgeColor={'#fff'}
+        edgeBorderWidth={3}
+        edgeHeight={20}
+        edgeWidth={20}
+        edgeRadius={0}
+        animatedLineColor={'#fff'}
+        animatedLineThickness={3}
+        animatedLineOrientation="horizontal"
+        isActive={true}
       />
       <View className="flex-1" style={{ marginTop: headerStatusBar }}>
         <View className="absolute right-4">
@@ -72,7 +108,7 @@ export const Home = () => {
             <SwitchCamera className="text-white" size={24} />
           </TouchableOpacity>
         </View>
-        <View className="absolute top-[40%] self-center h-20 aspect-[3/1] rounded-lg border-4 border-green-500" />
+        {/* <View className="absolute top-[40%] self-center h-20 aspect-[3/1] rounded-lg border-4 border-green-500" /> */}
 
         <TouchableOpacity
           onPress={takePhoto}
