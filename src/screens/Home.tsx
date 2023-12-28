@@ -11,6 +11,7 @@ import {
 import { useGetSize } from '../hooks/sizes';
 import { usePermissions } from '../hooks/permissions';
 import { PlateMask } from '../components/PlateMask';
+import { useIsFocused } from '@react-navigation/native';
 
 export const Home = () => {
   const [active, setActive] = useState(false);
@@ -25,6 +26,8 @@ export const Home = () => {
     requestCameraPermission,
     requestMicrophonePermission,
   } = usePermissions();
+
+  const isFocused = useIsFocused();
 
   const frameProcessor = useFrameProcessor((frame) => {
     'worklet';
@@ -71,16 +74,16 @@ export const Home = () => {
 
   return (
     <View className="flex-1">
-      <Camera
-        ref={camera}
-        isActive={active}
-        device={device}
-        photo={true}
-        style={StyleSheet.absoluteFill}
-        onInitialized={() => setTimeout(() => setActive(true), 150)}
-        codeScanner={codeScanner}
-        fps={10}
-      />
+      {isFocused && (
+        <Camera
+          ref={camera}
+          isActive={active}
+          device={device}
+          photo={true}
+          style={StyleSheet.absoluteFill}
+          onInitialized={() => setTimeout(() => setActive(true), 150)}
+        />
+      )}
       <PlateMask />
       <View className="flex-1" style={{ marginTop: headerStatusBar }}>
         <View className="absolute right-4">
