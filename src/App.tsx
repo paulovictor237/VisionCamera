@@ -1,4 +1,3 @@
-import * as React from 'react';
 import { NavigationContainer } from '@react-navigation/native';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import { Routes } from './routes';
@@ -15,14 +14,14 @@ export const App = () => {
         <Stack.Screen
           name="Home"
           component={Home}
-          options={{
-            headerStyle: { backgroundColor: 'transparent' },
-            headerTransparent: true,
-            statusBarStyle: 'auto',
-            statusBarTranslucent: true,
-            statusBarColor: 'transparent',
-            title: '',
-          }}
+          // options={{
+          //   headerStyle: { backgroundColor: 'transparent' },
+          //   headerTransparent: true,
+          //   statusBarStyle: 'auto',
+          //   statusBarTranslucent: true,
+          //   statusBarColor: 'transparent',
+          //   title: '',
+          // }}
         />
       </Stack.Navigator>
     </NavigationContainer>
